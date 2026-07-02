@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js mentions --hours 1",
+    "mentions": "node index.js mentions",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
