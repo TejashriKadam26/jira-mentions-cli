@@ -14,7 +14,7 @@
 
 ---
 
-## 🛠️ Tech Stack
+## �️ Tech Stack
 
 | Package | Purpose |
 |---------|---------|
@@ -26,7 +26,7 @@
 
 ---
 
-## 🚀 Setup Guide (Step by Step)
+## �🚀 Setup Guide (Step by Step)
 
 ### Step 1 — Prerequisites
 
@@ -104,48 +104,13 @@ TEAMS_WEBHOOK_URL=
 
 #### 🔍 How to find a team member's `accountId`
 
-1. Open Postman
-2. Run: `GET https://rib-40.atlassian.net/rest/api/3/user/search?query=Name`
-   - Auth: Basic Auth → Username: your email, Password: your API token
-3. Copy the `accountId` from the response
+Ask your Jira admin for the accountId, or check the Jira user directory link (format: `https://rib-40.atlassian.net/people/accountId`).
 
-OR run the lookup script (after setup):
-```bash
-node -e "
-const https = require('https');
-const axios = require('axios');
-require('dotenv').config();
-const auth = Buffer.from(process.env.JIRA_EMAIL+':'+process.env.JIRA_API_TOKEN).toString('base64');
-const agent = new https.Agent({ rejectUnauthorized: false });
-axios.get(process.env.JIRA_BASE_URL+'/rest/api/3/user/search',{
-  headers:{Authorization:'Basic '+auth},
-  params:{query:'Name Here'},
-  httpsAgent: agent
-}).then(r=>r.data.forEach(u=>console.log(u.accountId, '=', u.displayName)));
-"
-```
+Example: `712020:ad5611d3-7394-4523-a092-6269cc8effe6`
 
 ---
 
-### Step 6 — Verify API Connection (Postman)
-
-Before running the CLI, verify your credentials work in Postman:
-
-1. Open Postman
-2. **Settings → General → SSL Certificate Verification → OFF** (corporate network fix)
-3. New request:
-   - **Method:** `GET`
-   - **URL:** `https://rib-40.atlassian.net/rest/api/3/myself`
-   - **Authorization tab → Basic Auth**
-     - Username: your Jira email
-     - Password: your API token
-4. Click **Send**
-
-✅ If you get `200 OK` with your profile — you're ready to run the CLI.
-
----
-
-### Step 7 — Run the CLI
+### Step 6 — Run the CLI
 
 ```bash
 # Scan last 1 hour for team mentions
@@ -194,34 +159,6 @@ I will also demonstrate this during the demo.
 
 ---
 
-### 💡 Understanding the Output
-
-| Part | Meaning |
-|------|---------|
-| **🔍 Scanning Jira [DEV]** | Scan started for DEV project |
-| **Found 25 recently updated** | Found 25 issues changed in last 1 hour |
-| **🎫 Ticket: DEV-72148** | Issue key and current status |
-| **Title** | Ticket summary (PoC ticket for testing) |
-| **Reporter** | Who created the ticket (Tejashri Kadam) |
-| **💬 Comment by: Tejashri Kadam** | Who wrote the comment and timestamp |
-| **Mentioned: @Michael Alisch** | Team member tagged in this comment |
-| **Message** | The actual comment text extracted from Jira's ADF JSON format |
-| **✅ Found 1 comment(s)** | Total comments found where your team members were mentioned |
-
----
-
-### What This Proves
-
-This real output demonstrates:
-- ✅ **ADF Parsing Works:** Correctly extracted the comment from Jira's internal JSON format
-- ✅ **Mention Detection Works:** Found @Michael Alisch mention correctly
-- ✅ **Team Filtering Works:** Only showed mentions of configured team members
-- ✅ **Message Extraction Works:** Displayed the actual comment text to the user
-- ✅ **Real Data:** Tested against actual DEV-72148 ticket
-- ✅ **CLI Works:** Command executed successfully with formatted output
-
----
-
 ## ⏱️ Time Range Reference
 
 | Time Range | Command |
@@ -235,58 +172,40 @@ This real output demonstrates:
 
 ---
 
-## 📁 Project Structure
+## 🐛 Common Issues
+
+| Issue | Solution |
+|-------|----------|
+| `401 Unauthorized` | Check email & token in `.env` |
+| `Missing environment variables` | Fill all required fields in `.env` |
+| `0 mentions found` | Try `--hours 48` or `--hours 168` |
+| `Cannot find module` | Run `npm install` |
+
+## 🔐 Security
+
+- ✅ `.env` is in `.gitignore` (never committed)
+- ✅ Use API token (not your password)
+
+---
+
+## � File Structure
 
 ```
 jira-mentions-cli/
-├── index.js              ← CLI entry point (2 commands)
-├── package.json          ← Dependencies & scripts
-├── .env                  ← Your credentials (DO NOT COMMIT)
-├── .env.example          ← Template — copy this to .env
-├── .gitignore            ← Excludes .env and node_modules
+├── index.js              ← CLI entry point (yargs)
+├── package.json          ← Dependencies
+├── .env.example          ← Template for credentials
+├── .gitignore            ← Excludes .env & node_modules
 └── src/
-    ├── config.js         ← Loads .env, validates credentials
-    ├── jiraService.js    ← All Jira REST API calls
-    ├── mentionParser.js  ← ADF JSON parser + team filter
-    └── reporter.js       ← Chalk colored terminal output
+    ├── config.js         ← Environment setup
+    ├── jiraService.js    ← Jira API client
+    ├── mentionParser.js  ← ADF parser
+    └── reporter.js       ← Terminal output
 ```
 
 ---
 
-## 🔌 API Endpoints Used
-
-| API | Endpoint | Purpose |
-|-----|----------|---------|
-| Search Issues | `GET /rest/api/3/search/jql` | Find recently updated tickets |
-| Get Comments | `GET /rest/api/3/issue/{key}/comment` | Fetch all comments |
-| Get Issue | `GET /rest/api/3/issue/{key}` | Fetch ticket details |
-| Get User | `GET /rest/api/3/user?accountId=...` | Look up user by ID |
-
----
-
-## 🐛 Troubleshooting
-
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `unable to get local issuer certificate` | Corporate SSL proxy | Already handled in code — no action needed |
-| `401 Unauthorized` | Wrong email or token | Regenerate token at `id.atlassian.com/manage-profile/security/api-tokens` |
-| `Missing required environment variables` | `.env` not filled | Open `.env` and add `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN` |
-| `0 issues found` | No recent activity | Try `--hours 48` or `--hours 168` |
-| `0 mentions found` | AccountIds not matching | Run `check-issue --key DEV-XXXX --all` to see all raw mentions |
-| `Cannot find module` | Dependencies not installed | Run `npm install` |
-| Postman `SSL Error` | Corporate network | Settings → SSL Certificate Verification → OFF |
-
----
-
-## 🔐 Security Notes
-
-- **Never commit `.env`** — it is already in `.gitignore`
-- Use `JIRA_API_TOKEN` (not your Atlassian account password)
-- The SSL bypass (`rejectUnauthorized: false`) is safe for internal corporate tools
-
----
-
-## 🗺️ Roadmap
+## �🗺️ Roadmap
 
 | Phase | Feature | Status |
 |-------|---------|--------|
