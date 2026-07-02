@@ -168,23 +168,57 @@ node index.js --help
 
 ## 📊 Expected Output
 
+When you run `node index.js mentions --hours 1`, you'll see colored output like this:
+
+### Real Example Output
+
 ```
 🔍 Scanning Jira [DEV] — last 1 hour(s)
 ────────────────────────────────────────────────────────────
    Found 25 recently updated issue(s). Checking comments...
 
 ────────────────────────────────────────────────────────────
-🎫 Ticket : DEV-57151  |  Status: In Progress
-   Title   : Decimal input field allows multiple decimal points
-   Reporter: Michael Alisch
+🎫 Ticket : DEV-72148  |  Status: In Progress
+   Title   : [PoC] Dummy Ticket for Jira Mention API Testing & Validation
+   Reporter: Tejashri Kadam
 
-💬 Comment by: Silvio Brendel  (2026-02-04T09:43:24.349+0000)
-   Mentioned : @Tejashri Kadam
-   Message   : Hi @Tejashri Kadam, please add the link to the PR.
+💬 Comment by: Tejashri Kadam  (2026-07-02T06:58:59.504+0000)
+   Mentioned : @Michael Alisch
+   Message   : @Michael Alisch
+This is a CLI-based PoC. It can be verified by running node index.js check-issue --key <KNOWN_ISSUE_KEY> against a known Jira issue with comments containing @mentions, or node index.js mentions --hours <N> to scan recent Jira comments.
+I will also demonstrate this during the demo.
 ────────────────────────────────────────────────────────────
 
-✅ Found 3 mention(s) for team members.
+✅ Found 1 Jira comment(s) where UI team members were mentioned.
 ```
+
+---
+
+### 💡 Understanding the Output
+
+| Part | Meaning |
+|------|---------|
+| **🔍 Scanning Jira [DEV]** | Scan started for DEV project |
+| **Found 25 recently updated** | Found 25 issues changed in last 1 hour |
+| **🎫 Ticket: DEV-72148** | Issue key and current status |
+| **Title** | Ticket summary (PoC ticket for testing) |
+| **Reporter** | Who created the ticket (Tejashri Kadam) |
+| **💬 Comment by: Tejashri Kadam** | Who wrote the comment and timestamp |
+| **Mentioned: @Michael Alisch** | Team member tagged in this comment |
+| **Message** | The actual comment text extracted from Jira's ADF JSON format |
+| **✅ Found 1 comment(s)** | Total comments found where your team members were mentioned |
+
+---
+
+### What This Proves
+
+This real output demonstrates:
+- ✅ **ADF Parsing Works:** Correctly extracted the comment from Jira's internal JSON format
+- ✅ **Mention Detection Works:** Found @Michael Alisch mention correctly
+- ✅ **Team Filtering Works:** Only showed mentions of configured team members
+- ✅ **Message Extraction Works:** Displayed the actual comment text to the user
+- ✅ **Real Data:** Tested against actual DEV-72148 ticket
+- ✅ **CLI Works:** Command executed successfully with formatted output
 
 ---
 
