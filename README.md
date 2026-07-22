@@ -70,7 +70,7 @@ This installs: `axios`, `chalk`, `dotenv`, `yargs`
    ```
 2. Log in with the same email you use for Jira
 3. Click **"Create API token"**
-4. Enter a label: `jira-mentions-cli`
+4. Enter a label: `APItoken1_name`
 5. Click **"Create"**
 6. **Copy the token immediately** — it is shown only once!
 
@@ -78,18 +78,11 @@ This installs: `axios`, `chalk`, `dotenv`, `yargs`
 
 ### Step 5 — Create Your `.env` File
 
-Copy the example file and fill in your credentials:
+Fill in the .env file with the following information:
 
-```bash
-cp .env.example .env
-```
-
-Then open `.env` and fill in your values:
-
-```env
 # Jira Configuration
-JIRA_BASE_URL=https://rib-40.atlassian.net
-JIRA_EMAIL=your.email@rib-software.com
+JIRA_BASE_URL=https://your-org.atlassian.net
+JIRA_EMAIL=your.email@company.com
 JIRA_API_TOKEN=your_api_token_here
 
 # Jira project key to scan
@@ -98,36 +91,36 @@ JIRA_PROJECT=DEV
 # Comma-separated Jira accountIds of team members to track
 TEAM_ACCOUNT_IDS=accountId1,accountId2,accountId3
 
-# Optional: Microsoft Teams Webhook (Phase 2)
-TEAMS_WEBHOOK_URL=
-```
 
 #### 🔍 How to find a team member's `accountId`
 
-Ask your Jira admin for the accountId, or check the Jira user directory link (format: `https://rib-40.atlassian.net/people/accountId`).
-
-Example: `712020:ad5611d3-7394-4523-a092-6269cc8effe6`
+- Go to Jira user directory: `https://your-org.atlassian.net/people`
+- Find the user's profile
+- Click on the user's name
+- The URL will be in this format: `https://your-org.atlassian.net/people/accountId`
+URL Example: `https://your-org.atlassian.net/people/712020:ad5611d3-7394-4523-a092-6269cc8effe6`
+accountId Example: `712020:ad5611d3-7394-4523-a092-6269cc8effe6`
 
 ---
 
 ### Step 6 — Run the CLI
 
 ```bash
-# Scan last 1 hour for team mentions
-node index.js mentions --hours 1
+# Scan recent mentions (set your own time range in hours)
+node index.js mentions --hours <number_of_hours>
 
-# Scan last 24 hours
-node index.js mentions --hours 24
+# Check a specific ticket (configured team members only)
+node index.js check-issue --key <ISSUE_KEY>
 
-# Check a specific ticket (great for testing)
-node index.js check-issue --key DEV-57151
-
-# Show ALL mentions in a ticket (debug mode)
-node index.js check-issue --key DEV-57151 --all
+# Check all mentions in a specific ticket
+node index.js check-issue --key <ISSUE_KEY> --all
 
 # Show help
 node index.js --help
 ```
+
+> **Note:** `--hours` is always in hours.  
+> Example: `24 = 1 day`, `48 = 2 days`, `168 = 7 days (1 week)`.
 
 ---
 
@@ -159,18 +152,6 @@ I will also demonstrate this during the demo.
 
 ---
 
-## ⏱️ Time Range Reference
-
-| Time Range | Command |
-|------------|---------|
-| Last 1 hour | `node index.js mentions --hours 1` |
-| Last 6 hours | `node index.js mentions --hours 6` |
-| Last 1 day | `node index.js mentions --hours 24` |
-| Last 2 days | `node index.js mentions --hours 48` |
-| Last 1 week | `node index.js mentions --hours 168` |
-| Last 1 month | `node index.js mentions --hours 720` |
-
----
 
 ## 🐛 Common Issues
 
@@ -181,29 +162,8 @@ I will also demonstrate this during the demo.
 | `0 mentions found` | Try `--hours 48` or `--hours 168` |
 | `Cannot find module` | Run `npm install` |
 
-## 🔐 Security
-
-- ✅ `.env` is in `.gitignore` (never committed)
-- ✅ Use API token (not your password)
-
 ---
 
-## � File Structure
-
-```
-jira-mentions-cli/
-├── index.js              ← CLI entry point (yargs)
-├── package.json          ← Dependencies
-├── .env.example          ← Template for credentials
-├── .gitignore            ← Excludes .env & node_modules
-└── src/
-    ├── config.js         ← Environment setup
-    ├── jiraService.js    ← Jira API client
-    ├── mentionParser.js  ← ADF parser
-    └── reporter.js       ← Terminal output
-```
-
----
 
 ## �🗺️ Roadmap
 
