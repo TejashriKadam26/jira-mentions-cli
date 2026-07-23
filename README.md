@@ -78,7 +78,7 @@ This installs: `axios`, `chalk`, `dotenv`, `yargs`
 
 ### Step 5 — Create Your `.env` File
 
-Fill in the .env file with the following information:
+Copy `.env.example` to `.env`, then fill in your Jira details like below.
 
 # Jira Configuration
 JIRA_BASE_URL=https://your-org.atlassian.net
