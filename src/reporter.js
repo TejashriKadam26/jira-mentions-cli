@@ -77,9 +77,9 @@ async function printSummary(count) {
   const c = await getChalk();
   console.log(c.gray(DIVIDER));
   if (count === 0) {
-    console.log(c.yellow('✅ No Jira comments mentioning UI team members were found in the selected time range.'));
+    console.log(c.yellow('✅ No Jira comments mentioning configured team member(s) were found in the selected time range.'));
   } else {
-    console.log(c.bold.green(`✅ Found ${count} Jira comment(s) where UI team members were mentioned.`));
+    console.log(c.bold.green(`✅ Found ${count} Jira comment(s) where configured team member(s) were mentioned.`));
   }
   console.log('');
 }
